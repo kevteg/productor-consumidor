@@ -5,8 +5,6 @@
 #include "consumidor.h"
 #include "productor.h"
 
-
-
 int main(int argc, char *argv[]){
   clear();
   int index = 0, *id[2];
@@ -35,13 +33,6 @@ int main(int argc, char *argv[]){
          exit(-1);
      }
      iniciarSemaforos();
-    /* #ifdef __linux__
-     sem_init(&mutex, 0, 1);
-     sem_init(&lleno, 0, 0);
-     sem_init(&vacio, 0, argumento[BUFFER]);
-     #elif _WIN32
-
-     #endif*/
      id[PRODUCTOR]     = malloc(argumento[PRODUCTOR] * sizeof(int));
      id[CONSUMIDOR]    = malloc(argumento[CONSUMIDOR] * sizeof(int));
      hilos[PRODUCTOR]  = malloc(argumento[PRODUCTOR] * sizeof(pthread_t));
@@ -66,9 +57,6 @@ int main(int argc, char *argv[]){
        iniciarHilo(hilos[CONSUMIDOR][index]);
 
     detenerSemaforos();
-    /*sem_destroy(&mutex);
-    sem_destroy(&lleno);
-    sem_destroy(&vacio);*/
     exit(0);
 }
 void *nivelProducto(){
@@ -112,8 +100,7 @@ void *nivelProducto(){
     printf (" \033[%d;%dH", 29, 18);
     printf("C[%d] quitó\n", ult_con);
   }
-  //dormir(1);
-  sleep(1);
+  dormir(1);
 }
 }
 void crearRecuadro(){
