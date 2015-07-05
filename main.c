@@ -1,15 +1,30 @@
+
 #include <stdio.h>
+#include "prototipos.h"
 #include "hilopc.h"
-#define N_ARG      3
-#define BUFFER     0
-#define PRODUCTOR  1
-#define CONSUMIDOR 2
-#define MAX_BUFFER 100
-#define MAX_PC 10
+#include "consumidor.h"
+#include "productor.h"
+
+
+
 int main(int argc, char *argv[]){
-  int index, argumento[N_ARG];
+  clear();
+  int index = 0, *id[2];
+  argumento = malloc(N_ARG * sizeof(int));
+  #ifdef __linux__
+    pthread_t *hilos[2];
+  #elif _WIN32
+    DWORD *hilos[2];
+  #endif
+  buff = 0;
+  xc = 30;
+  yc = 20;
+  xp = 30;
+  yp = 0;
+  ult_con = -1;
+  ult_pro = -1;
   if(argc < N_ARG){
-      printf("Número de argumentos invalidos.\n\tNúmero-de-productos-máximo Productores Consumidores");
+      printf("Número de argumentos invalidos.\n\tProductores Consumidores Número-de-productos-máximo");
       exit(-1);
   }else
     for(index = 1; index < N_ARG + 1; index++)
@@ -21,9 +36,127 @@ int main(int argc, char *argv[]){
                 MAX_BUFFER, MAX_PC, MAX_PC);
          exit(-1);
      }
+     sem_init(&mutex, 0, 1);
+     sem_init(&lleno, 0, 0);
+     sem_init(&vacio, 0, argumento[BUFFER]);
+
+     id[PRODUCTOR]     = malloc(argumento[PRODUCTOR] * sizeof(int));
+     id[CONSUMIDOR]    = malloc(argumento[CONSUMIDOR] * sizeof(int));
+     hilos[PRODUCTOR]  = malloc(argumento[PRODUCTOR] * sizeof(pthread_t));
+     hilos[CONSUMIDOR] = malloc(argumento[CONSUMIDOR] * sizeof(pthread_t));
+
      for(index = 0; index < argumento[PRODUCTOR]; index++)
-       crearHilo(PRODUCTOR, index);
+       id[PRODUCTOR][index] = index + 1;
+
      for(index = 0; index < argumento[CONSUMIDOR]; index++)
-       crearHilo(CONSUMIDOR, index);
+       id[CONSUMIDOR][index] = index + 1;
+
+       pthread_t gra;
+       pthread_create(&gra, NULL, nivelProducto, NULL);
+
+
+     for(index = 0; index < argumento[PRODUCTOR]; index++)
+       hilos[PRODUCTOR][index] = crearHilo(PRODUCTOR, &id[PRODUCTOR][index]);
+     for(index = 0; index < argumento[CONSUMIDOR]; index++)
+       hilos[CONSUMIDOR][index] = crearHilo(CONSUMIDOR, &id[CONSUMIDOR][index]);
+       pthread_join (gra, NULL);
+
+
+     for(index = 0; index < argumento[PRODUCTOR]; index++)
+       iniciarHilo(hilos[PRODUCTOR][index]);
+     for(index = 0; index < argumento[CONSUMIDOR]; index++)
+       iniciarHilo(hilos[CONSUMIDOR][index]);
+//nivelProducto();
+    sem_destroy(&mutex);
+    sem_destroy(&lleno);
+    sem_destroy(&vacio);
     exit(0);
+}
+void *nivelProducto(){
+  while(true){
+    //printf(">%d\n", buff);
+  clear();
+
+  int index = 0;
+  int x;
+  int y = -10;
+  for(index = 0; index < MAX_BUFFER; index++){
+    if(!(index %  (MAX_BUFFER/4))){
+      x = 1;
+      y += 10;
+    }
+    printf (" \033[%d;%dH", x, y);
+    x++;
+    printf(COLOR_AZUL);
+    printf("▎");
+    if(index + 1 <= buff){
+      printf(COLOR_VERDE);
+      printf("◧◨◧◨");
+    }else
+      printf("    ");
+    printf(COLOR_AZUL);
+    printf(" ▎");
+    printf(COLOR_NORMAL);
+  }
+
+  crearRecuadro();
+  printf (" \033[%d;%dH", 27, 5);
+  printf("Producto: %d", buff);
+  printf (" \033[%d;%dH", 28, 5);
+  printf("Máximo: %d", argumento[BUFFER]);
+  printf (" \033[%d;%dH", 27, 18);
+  printf("Consumidores: %d", argumento[CONSUMIDOR]);
+  printf (" \033[%d;%dH", 28, 18);
+  printf("Productores: %d",  argumento[PRODUCTOR]);
+  if(ult_pro != -1){
+    printf (" \033[%d;%dH", 29, 5);
+    printf("P[%d] agregó", ult_pro);
+  }
+  if(ult_con != -1){
+    printf (" \033[%d;%dH", 29, 18);
+    printf("C[%d] quitó\n", ult_con);
+  }
+  sleep(1);
+}
+}
+void crearRecuadro(){
+  int index;
+  int tam_largo = 3;
+  int tam_ancho =36;
+  int x, y;
+  x = 26; y = 0;
+  printf(COLOR_VERDE);
+  printf (" \033[%d;%dH", x, y);
+  for(index = 0; index < tam_ancho; index++){
+    if(!index)
+      printf ("┌");
+    else
+      printf ("─");
+  }
+    printf("┐");
+  x = 27;
+  for(index = 0; index < tam_largo; index++){
+    printf (" \033[%d;%dH", x, y);
+    printf ("│");
+    x++;
+  }
+  x = 30;
+  y = 0;
+  printf (" \033[%d;%dH", x, y);
+  for(index = 0; index < tam_ancho; index++){
+    if(!index)
+      printf ("└");
+      else
+        printf ("─");
+      }
+  x = 27;
+  y = 37;
+  for(index = 0; index < tam_largo; index++){
+    printf (" \033[%d;%dH", x, y);
+    printf ("│");
+    x++;
+  }
+  printf (" \033[%d;%dH", x, y);
+  printf("┘");
+  printf(COLOR_NORMAL);
 }
