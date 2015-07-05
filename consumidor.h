@@ -6,16 +6,15 @@
     int n_con = *(int *)n_cn;
 #endif
 while(true){
-  if(buff > 0 /*&& buff <= 100*/){
+  if(buff > 0){
+    up(MUTEX);
     sem_post(&mutex);
     buff--;
     ult_con = *n_con;
-    sem_post(&vacio);
-    sem_wait(&lleno);
+    up(VACIO);
+    down(LLENO);
   }else
-    sem_wait(&mutex);
-  sleep(1);
+    down(MUTEX);
+  dormir(1);
 }
-
-
 }

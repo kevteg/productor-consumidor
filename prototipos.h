@@ -16,11 +16,14 @@
 #define COLOR_VERDE           "\x1b[32m"
 #define COLOR_AZUL            "\x1b[34m"
 #define COLOR_NOTIFICACION    "\x1b[47m"
-
+#define MUTEX      0
+#define LLENO      1
+#define VACIO      2
 #define N_ARG      3
 #define PRODUCTOR  0
 #define CONSUMIDOR 1
 #define BUFFER     2
+#define GRAFICO    3
 #define MAX_BUFFER 100
 #define MAX_PC     50
 #define clear()    printf("\033[H\033[J")
@@ -60,13 +63,22 @@ void iniciarHilo(pthread_t hilo);
 
 void *nivelProducto();
 void crearRecuadro();
+void dormir(int);
+void down(int tipo);
+void up(int tipo);
+void iniciarSemaforos();
+void detenerSemaforos();
 
-sem_t mutex;
-sem_t lleno;
-sem_t vacio;
+#ifdef __linux__
+  sem_t mutex;
+  sem_t lleno;
+  sem_t vacio;
+#elif _WIN32
+
+#endif
+
 int *argumento;
-int xp, yp;
-int xc, yc;
+
 int ult_pro;
 int ult_con;
 int buff;

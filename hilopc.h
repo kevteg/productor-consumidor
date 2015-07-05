@@ -16,6 +16,9 @@ DWORD* crearHilo(int tipo, int *num_ins){
       case CONSUMIDOR:
         instanciaHilo(&hilo, id, fConsumidor);
       break;
+      case GRAFICO:
+        instanciaHilo(&hilo, NULL, nivelProducto);
+      break;
     }
 
 return hilo;
@@ -35,8 +38,6 @@ void instanciaHilo(DWORD *hiloId, int *parametro, void *(*funcion_hilo)(void *))
   hiloId
   );
 #endif
-//printf("hilos[%d]\n", parametro);
-
   #ifdef __linux__
     if (pthread_create(hilo, NULL, funcion_hilo, parametro)){
   #elif _WIN32
@@ -61,4 +62,80 @@ void instanciaHilo(DWORD *hiloId, int *parametro, void *(*funcion_hilo)(void *))
         abort();
       }
 }
+void dormir(int tiempo){
+  #ifdef __linux__
+    sleep(tiempo);
+  #elif _WIN32
+    Sleep(tiempo*1000);
+  #endif
+}
+void down(int tipo){
+  switch(tipo){
+    case MUTEX:
+      #ifdef __linux__
+        sem_wait(&mutex);
+      #elif _WIN32
+
+      #endif
+    break;
+    case LLENO:
+      #ifdef __linux__
+        sem_wait(&lleno);
+      #elif _WIN32
+
+      #endif
+    break;
+    case VACIO:
+      #ifdef __linux__
+        sem_wait(&vacio);
+      #elif _WIN32
+
+      #endif
+    break;
+  }
+}
+void up(int tipo){
+  switch(tipo){
+    case MUTEX:
+      #ifdef __linux__
+        sem_post(&mutex);
+      #elif _WIN32
+
+      #endif
+    break;
+    case LLENO:
+      #ifdef __linux__
+        sem_post(&lleno);
+      #elif _WIN32
+
+      #endif
+    break;
+    case VACIO:
+      #ifdef __linux__
+        sem_post(&vacio);
+      #elif _WIN32
+
+      #endif
+    break;
+  }
+}
+void iniciarSemaforos(){
+  #ifdef __linux__
+    sem_init(&mutex, 0, 1);
+    sem_init(&lleno, 0, 0);
+    sem_init(&vacio, 0, argumento[BUFFER]);
+  #elif _WIN32
+
+  #endif
+}
+void detenerSemaforos(){
+  #ifdef __linux__
+    sem_destroy(&mutex);
+    sem_destroy(&lleno);
+    sem_destroy(&vacio);
+  #elif _WIN32
+
+  #endif
+}
+
 /*---*/

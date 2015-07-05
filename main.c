@@ -13,14 +13,12 @@ int main(int argc, char *argv[]){
   argumento = malloc(N_ARG * sizeof(int));
   #ifdef __linux__
     pthread_t *hilos[2];
+    pthread_t gra;
   #elif _WIN32
     DWORD *hilos[2];
+    DWORD gra;
   #endif
   buff = 0;
-  xc = 30;
-  yc = 20;
-  xp = 30;
-  yp = 0;
   ult_con = -1;
   ult_pro = -1;
   if(argc < N_ARG){
@@ -36,10 +34,14 @@ int main(int argc, char *argv[]){
                 MAX_BUFFER, MAX_PC, MAX_PC);
          exit(-1);
      }
+     iniciarSemaforos();
+    /* #ifdef __linux__
      sem_init(&mutex, 0, 1);
      sem_init(&lleno, 0, 0);
      sem_init(&vacio, 0, argumento[BUFFER]);
+     #elif _WIN32
 
+     #endif*/
      id[PRODUCTOR]     = malloc(argumento[PRODUCTOR] * sizeof(int));
      id[CONSUMIDOR]    = malloc(argumento[CONSUMIDOR] * sizeof(int));
      hilos[PRODUCTOR]  = malloc(argumento[PRODUCTOR] * sizeof(pthread_t));
@@ -51,32 +53,27 @@ int main(int argc, char *argv[]){
      for(index = 0; index < argumento[CONSUMIDOR]; index++)
        id[CONSUMIDOR][index] = index + 1;
 
-       pthread_t gra;
-       pthread_create(&gra, NULL, nivelProducto, NULL);
-
-
+     gra = crearHilo(GRAFICO, NULL);
      for(index = 0; index < argumento[PRODUCTOR]; index++)
        hilos[PRODUCTOR][index] = crearHilo(PRODUCTOR, &id[PRODUCTOR][index]);
      for(index = 0; index < argumento[CONSUMIDOR]; index++)
        hilos[CONSUMIDOR][index] = crearHilo(CONSUMIDOR, &id[CONSUMIDOR][index]);
-       pthread_join (gra, NULL);
 
-
+     iniciarHilo(gra);
      for(index = 0; index < argumento[PRODUCTOR]; index++)
        iniciarHilo(hilos[PRODUCTOR][index]);
      for(index = 0; index < argumento[CONSUMIDOR]; index++)
        iniciarHilo(hilos[CONSUMIDOR][index]);
-//nivelProducto();
-    sem_destroy(&mutex);
+
+    detenerSemaforos();
+    /*sem_destroy(&mutex);
     sem_destroy(&lleno);
-    sem_destroy(&vacio);
+    sem_destroy(&vacio);*/
     exit(0);
 }
 void *nivelProducto(){
   while(true){
-    //printf(">%d\n", buff);
   clear();
-
   int index = 0;
   int x;
   int y = -10;
@@ -98,7 +95,6 @@ void *nivelProducto(){
     printf(" ▎");
     printf(COLOR_NORMAL);
   }
-
   crearRecuadro();
   printf (" \033[%d;%dH", 27, 5);
   printf("Producto: %d", buff);
@@ -116,6 +112,7 @@ void *nivelProducto(){
     printf (" \033[%d;%dH", 29, 18);
     printf("C[%d] quitó\n", ult_con);
   }
+  //dormir(1);
   sleep(1);
 }
 }

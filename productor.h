@@ -5,17 +5,15 @@
   DWORD WINAPI funcionHilo (LPVOID n_pr){
   int *n_pro = (int *)n_pr;
 #endif
-//int num = *n_pro;
-
   while(true){
-    if(/*buff >= 0 &&*/ buff < 100){
-      sem_post(&mutex);
+    if( buff < 100){
+      up(MUTEX);
       buff++;
       ult_pro = *n_pro;
-      sem_post(&lleno);
-      sem_wait(&vacio);
+      up(LLENO);
+      down(VACIO);
     }else
-      sem_wait(&mutex);
-    sleep(1);
+      down(MUTEX);
+    dormir(1);
   }
 }
