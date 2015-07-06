@@ -8,6 +8,8 @@
 #elif _WIN32
 #include <conio.h>
 #include <windows.h>
+#include <tchar.h>
+#include <strsafe.h>
 //#include "windows.h"
 #endif
 #define true                  1
@@ -32,36 +34,40 @@
 #ifdef __linux__
   void *fProductor(void *);
 #elif _WIN32
-  DWORD WINAPI fProductor (LPVOID *);
+  DWORD WINAPI *fProductor (LPVOID );
 #endif
 
 /*Prototipos de consumidor*/
 #ifdef __linux__
-void *fConsumidor(void *arg);
+	void *fConsumidor(void *);
 #elif _WIN32
-DWORD WINAPI fConsumidor (LPVOID *arg);
+	DWORD WINAPI *fConsumidor (LPVOID );
 #endif
 
 /*Prototipos de hilopc*/
 #ifdef __linux__
   pthread_t crearHilo(int, int *);
 #elif _WIN32
-  DWORD crearHilo(int, int *);
+  HANDLE crearHilo(int, int *);
 #endif
 
 #ifdef __linux__
   void instanciaHilo(pthread_t *hilo, int *parametro, void *(*funcion_hilo)(void *));
 #elif _WIN32
-  void instanciaHilo(DWORD *hiloId, int *parametro, void *(*funcion_hilo)(void *)){
+  void instanciaHilo(HANDLE *hilo, int *parametro, void *(*funcion_hilo)(void *));
 #endif
 
 #ifdef __linux__
-void iniciarHilo(pthread_t hilo);
+  void iniciarHilo(pthread_t hilo);
 #elif _WIN32
   void iniciarHilo(HANDLE hilo);
 #endif
 
+
+void gotoxy(int, int);
 void *nivelProducto();
+void nivelL();
+void nivelW();
 void crearRecuadro();
 void dormir(int);
 void down(int tipo);
@@ -74,7 +80,12 @@ void detenerSemaforos();
   sem_t lleno;
   sem_t vacio;
 #elif _WIN32
-
+  HANDLE mutex;
+  HANDLE lleno;
+  HANDLE vacio;
+  HANDLE hConsola;
+  CONSOLE_SCREEN_BUFFER_INFO consolaInfo;
+  WORD COLOR_NORMAL_W;
 #endif
 
 int *argumento;
