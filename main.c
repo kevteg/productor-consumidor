@@ -5,8 +5,9 @@
 #include "consumidor.h"
 #include "productor.h"
 /*Autores:
-		  Kevin Hernánez 21256207
-		  Estefany Salas 24820631*/
+      Kevin Hernández - 21256207
+      Estefany Salas  - 24820631
+	Sistemas operativos 2015-I*/
 int main(int argc, char *argv[]){
   int index = 0, *id[2];
   argumento = malloc(N_ARG * sizeof(int));
@@ -67,15 +68,13 @@ int main(int argc, char *argv[]){
      for(index = 0; index < argumento[CONSUMIDOR]; index++)
        hilos[CONSUMIDOR][index] = crearHilo(CONSUMIDOR, &id[CONSUMIDOR][index]);
 
-	 iniciarHilo(gra);
-
+      iniciarHilo(gra);
      	for(index = 0; index < argumento[PRODUCTOR]; index++)
        		iniciarHilo(hilos[PRODUCTOR][index]);
      	for(index = 0; index < argumento[CONSUMIDOR]; index++)
        		iniciarHilo(hilos[CONSUMIDOR][index]);
 
     detenerSemaforos();
-    //SetConsoleTextAttribute(hConsole, saved_attributes);
     exit(0);
 }
 

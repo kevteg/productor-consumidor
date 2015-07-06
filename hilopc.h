@@ -20,7 +20,6 @@ HANDLE crearHilo(int tipo, int *id){
         instanciaHilo(&hilo, NULL, nivelProducto);
       break;
     }
-
 return hilo;
 }
 
@@ -28,7 +27,7 @@ return hilo;
 void instanciaHilo(pthread_t *hilo, int *parametro, void *(*funcion_hilo)(void *)){
 #elif _WIN32
 void instanciaHilo(HANDLE *hilo, int *parametro, void *(*funcion_hilo)(void *)){
-  DWORD hiloId;	
+  DWORD hiloId;
   HANDLE  mhilo = CreateThread (
   NULL,       // Atributo de seguridad: Usar el de la thread actual
   0,          // TamaÃ±o del stack. Usar el tamaÃ±o por defecto
@@ -76,8 +75,8 @@ void down(int tipo){
       #ifdef __linux__
         sem_wait(&mutex);
       #elif _WIN32
-		WaitForSingleObject( 
-            mutex,  
+		WaitForSingleObject(
+            mutex,
             0L);
       #endif
     break;
@@ -85,8 +84,8 @@ void down(int tipo){
       #ifdef __linux__
         sem_wait(&lleno);
       #elif _WIN32
-		WaitForSingleObject( 
-            lleno,  
+		WaitForSingleObject(
+            lleno,
             0L);
       #endif
     break;
@@ -94,8 +93,8 @@ void down(int tipo){
       #ifdef __linux__
         sem_wait(&vacio);
       #elif _WIN32
-		WaitForSingleObject( 
-            vacio,  
+		WaitForSingleObject(
+            vacio,
             0L);
       #endif
     break;
@@ -107,30 +106,30 @@ void up(int tipo){
       #ifdef __linux__
         sem_post(&mutex);
       #elif _WIN32
-		ReleaseSemaphore( 
-                        mutex,  
-                        1,            //Sumar 1
-                        NULL);
+		ReleaseSemaphore(
+                    mutex,
+                    1,            //Sumar 1
+                    NULL);
       #endif
     break;
     case LLENO:
       #ifdef __linux__
         sem_post(&lleno);
       #elif _WIN32
-		ReleaseSemaphore( 
-                        lleno,  
-                        1,            //Sumar 1
-                        NULL);
+		ReleaseSemaphore(
+                    lleno,
+                    1,            //Sumar 1
+                    NULL);
       #endif
     break;
     case VACIO:
       #ifdef __linux__
         sem_post(&vacio);
       #elif _WIN32
-		ReleaseSemaphore( 
-                        vacio,  
-                        1,            //Sumar 1
-                        NULL);
+		ReleaseSemaphore(
+                    vacio,
+                    1,            //Sumar 1
+                    NULL);
       #endif
     break;
   }
@@ -141,21 +140,21 @@ void iniciarSemaforos(){
     sem_init(&lleno, 0, 0);
     sem_init(&vacio, 0, argumento[BUFFER]);
   #elif _WIN32
-	mutex = CreateSemaphore( 
-        NULL,           
+	mutex = CreateSemaphore(
+        NULL,
         1,  // Conteo inicial
-        1,  // Conteo máximo
-        NULL); 
-    lleno = CreateSemaphore( 
-        NULL,           
+        1,  // Conteo mï¿½ximo
+        NULL);
+    lleno = CreateSemaphore(
+        NULL,
         0,  // Conteo inicial
-        argumento[BUFFER],  // Conteo máximo
-        NULL);     
-    vacio = CreateSemaphore( 
-        NULL,           
+        argumento[BUFFER],  // Conteo mï¿½ximo
+        NULL);
+    vacio = CreateSemaphore(
+        NULL,
         argumento[BUFFER],  // Conteo inicial
-        argumento[BUFFER],  // Conteo máximo
-        NULL);     
+        argumento[BUFFER],  // Conteo mï¿½ximo
+        NULL);
   #endif
 }
 void detenerSemaforos(){
@@ -164,9 +163,9 @@ void detenerSemaforos(){
     sem_destroy(&lleno);
     sem_destroy(&vacio);
   #elif _WIN32
-	CloseHandle(mutex);
-	CloseHandle(lleno);
-	CloseHandle(vacio);
+  	CloseHandle(mutex);
+  	CloseHandle(lleno);
+  	CloseHandle(vacio);
   #endif
 }
 
